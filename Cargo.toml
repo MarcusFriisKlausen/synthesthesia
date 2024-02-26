@@ -1,8 +1,10 @@
 [package]
 name = "synthesthesia"
 version = "0.1.0"
+authors = ["Marcus Friis Klausen"]
 edition = "2021"
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+readme = "README.md"
+repository = "https://github.com/MarcusFriisKlausen/synthesthesia/"
 
 [dependencies]
 midir = "0.9.1"
