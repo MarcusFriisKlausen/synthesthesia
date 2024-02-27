@@ -12,30 +12,35 @@ pub fn input_listen() -> Result<(), Box<dyn Error>> {
     
     // Get an input port (read from console if multiple are available)
     let in_ports: Vec<midir::MidiInputPort> = midi_in.ports();
-    let in_port: &midir::MidiInputPort = match in_ports.len() {
-        0 => return Err("no input port found".into()),
-        1 => {
-            println!("Choosing the only available input port: {}", midi_in.port_name(&in_ports[0]).unwrap());
-            &in_ports[0]
-        },
-        _ => {
-            println!("\nAvailable input ports:");
-            for (i, p) in in_ports.iter().enumerate() {
-                println!("{}: {}", i, midi_in.port_name(p).unwrap());
+    let in_port: &midir::MidiInputPort = 
+        match in_ports.len() {
+            0 => return Err("no input port found".into()),
+            1 => {
+                println!(
+                    "Choosing the only available input port: {}", 
+                    midi_in.port_name(&in_ports[0]).unwrap()
+                );
+                &in_ports[0]
+            },
+            _ => {
+                println!("\nAvailable input ports:");
+                for (i, p) in in_ports.iter().enumerate() {
+                    println!("{}: {}", i, midi_in.port_name(p).unwrap());
+                }
+                print!("Please select input port: ");
+                stdout().flush()?;
+                let mut input: String = String::new();
+                stdin().read_line(&mut input)?;
+                in_ports.get(input.trim().parse::<usize>()?)
+                         .ok_or("invalid input port selected")?
             }
-            print!("Please select input port: ");
-            stdout().flush()?;
-            let mut input: String = String::new();
-            stdin().read_line(&mut input)?;
-            in_ports.get(input.trim().parse::<usize>()?)
-                     .ok_or("invalid input port selected")?
-        }
-    };
+        };
     
     println!("\nOpening connection");
     let in_port_name: String = midi_in.port_name(in_port)?;
 
-    // _conn_in needs to be a named parameter, because it needs to be kept alive until the end of the scope
+    // _conn_in needs to be a named parameter, because it needs to be kept alive until 
+    // the end of the scope
     let _conn_in: midir::MidiInputConnection<()> = 
         midi_in.connect(
             in_port, 
