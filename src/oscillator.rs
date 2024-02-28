@@ -13,6 +13,32 @@ pub struct Oscillator {
     increment_size: f32
 }
 
+impl Iterator for Oscillator {
+    type Item = f32;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        return Some(self.get_sample())
+    }
+}
+
+impl Source for Oscillator {
+    fn current_frame_len(&self) -> Option<usize> {
+        return None
+    }
+
+    fn channels(&self) -> u16 {
+        return 1
+    }
+
+    fn sample_rate(&self) -> u32 {
+        return self.sample_rate
+    }
+
+    fn total_duration(&self) -> Option<Duration> {
+        return None
+    }
+}
+
 impl Oscillator {
     pub fn new(sample_rate: u32, waveform: Vec<f32>) -> Oscillator {
         return Oscillator {
@@ -48,31 +74,5 @@ impl Oscillator {
 
         return truncated_index_weight * self.waveform[truncated_index] 
                 + next_index_weight * self.waveform[next_index]
-    }
-}
-
-impl Iterator for Oscillator {
-    type Item = f32;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        return Some(self.get_sample())
-    }
-}
-
-impl Source for Oscillator {
-    fn current_frame_len(&self) -> Option<usize> {
-        return None
-    }
-
-    fn channels(&self) -> u16 {
-        return 1
-    }
-
-    fn sample_rate(&self) -> u32 {
-        return self.sample_rate
-    }
-
-    fn total_duration(&self) -> Option<Duration> {
-        return None
     }
 }

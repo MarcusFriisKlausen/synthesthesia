@@ -1,19 +1,21 @@
 use rodio::{OutputStream, source::Source};
 
-mod midi_input;
+mod midi_converter;
 mod wave;
 mod oscillator;
 
 const PI: f32 = std::f32::consts::PI;
 
 fn main() {
+    let midi_converter: midi_converter::MidiConverter = midi_converter::MidiConverter::new();
+
     // Listen for midi input.
     // Prints [x, y, z] for key press:
     // x = 144 for key press, x = 128 for key release.
     // y is the in the range (0..=120) which is the different keys.
     // z is key velocity.
     // I haven't figured out what it prints for other knobs and buttons.
-    match midi_input::input_listen() {
+    match midi_converter.input_loop() {
         Ok(_) => (),
         Err(err) => println!("Error: {}", err)
     }
