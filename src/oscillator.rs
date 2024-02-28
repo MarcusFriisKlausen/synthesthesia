@@ -17,25 +17,25 @@ impl Iterator for Oscillator {
     type Item = f32;
 
     fn next(&mut self) -> Option<Self::Item> {
-        return Some(self.get_sample())
+        Some(self.get_sample())
     }
 }
 
 impl Source for Oscillator {
     fn current_frame_len(&self) -> Option<usize> {
-        return None
+        None
     }
 
     fn channels(&self) -> u16 {
-        return 1
+        1
     }
 
     fn sample_rate(&self) -> u32 {
-        return self.sample_rate
+        self.sample_rate
     }
 
     fn total_duration(&self) -> Option<Duration> {
-        return None
+        None
     }
 }
 
@@ -59,7 +59,7 @@ impl Oscillator {
         let sample: f32 = self.lerp();
         self.index += self.increment_size;
         self.index %= self.waveform.len() as f32;
-        return sample
+        sample
     }
 
     /// Function for linear interpolation.
@@ -72,7 +72,7 @@ impl Oscillator {
         let next_index_weight: f32 = self.index - truncated_index as f32;
         let truncated_index_weight: f32 = 1.0 - next_index_weight;
 
-        return truncated_index_weight * self.waveform[truncated_index] 
-                + next_index_weight * self.waveform[next_index]
+        truncated_index_weight * self.waveform[truncated_index] 
+        + next_index_weight * self.waveform[next_index]
     }
 }
