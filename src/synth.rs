@@ -22,7 +22,7 @@ impl Synth {
     // CURRENT ITERATION IS A TEMPORARY SOLUTION
     // PROBLEMS:
     // CAN ONLY PLAY 1 NOTE AT A TIME. NO OVERLAPPING NOTES.
-    // NOTES ARE PLAYED FOR A FIXED AMOUNT OF TIMES, NOT FROM PRESS TO RELEASE,
+    // NOTES ARE PLAYED FOR A FIXED AMOUNT OF TIME, NOT EXACTLY FROM PRESS TO RELEASE,
     // THOUGH THE FIXED SAMPLES LOOP FROM PRESS TILL RELEASE.
 
     /// Opens MIDI input port connection and listens for input.
@@ -70,7 +70,7 @@ impl Synth {
             midi_in.connect(
                 in_port, 
                 "midir-read-input", 
-                move |_stamp, message, _| {
+                move |_stamp: u64, message: &[u8], _| {
                     //println!("{}: {:?} (len = {})", stamp, message, message.len());
                     if message[0] == 144 {
                         let midi_converter: MidiConverter = MidiConverter::new();
@@ -78,8 +78,8 @@ impl Synth {
                         println!("{}", note);
                         let midi_value = format!("{}\n", message[1]);
                         file.write_all(
-                            midi_value.as_bytes()).expect("Couldn't write to file"
-                        );
+                            midi_value.as_bytes()
+                        ).expect("Couldn't write to file");
                     } else if message[0] == 128 {
                         file.write_all(b"Release\n").expect("Couldn't write to file");
                     }
@@ -87,13 +87,14 @@ impl Synth {
                 ()
             )?;
 
-        println!("Connection open, reading input from '{}' (press enter to exit) ...", in_port_name);
+        println!("Connection open, reading input from '{}'...", in_port_name);
         
         loop {
+            let amplitude = 0.25;  
             let mut waveform: Vec<f32> = Vec::with_capacity(WAVETABLE_SIZE);
                 for i in 0..WAVETABLE_SIZE {
                     waveform.push(
-                        0.25 // amp
+                        amplitude
                         * (2.0 * PI * i as f32 / WAVETABLE_SIZE as f32)
                         .sin()
                         );
